@@ -5,12 +5,15 @@ from ansible.playbook.play import Play
 from ansible.executor.task_queue_manager import TaskQueueManager
 from ansible import context
 from ansible.module_utils.common.collections import ImmutableDict
+from ansible.utils.display import Display
 
 def check_tool_remote(nickname, tool_name):
     loader = DataLoader()
     inventory = InventoryManager(loader=loader, sources=[nickname + ','])
     variable_manager = VariableManager(loader=loader, inventory=inventory)
 
+    # Suppress Ansible logs
+    display = Display(verbosity=0)
     context.CLIARGS = ImmutableDict(
         connection='ssh',
         module_path=None,
@@ -21,7 +24,7 @@ def check_tool_remote(nickname, tool_name):
         check=False,
         diff=False,
         remote_user=None,
-        verbosity=3
+        verbosity=0
     )
 
     play_source = dict(
@@ -29,11 +32,13 @@ def check_tool_remote(nickname, tool_name):
         hosts=nickname,
         gather_facts='no',
         tasks=[
-            dict(name=f"Check if {tool_name} is installed",
-                 action=dict(module='command', args=dict(cmd=f'which {tool_name}')),
-                 register='tool_check',
-                 failed_when="tool_check.rc != 0",
-                 ignore_errors=True)
+            dict(
+                name=f"Check if {tool_name.lower()} is installed",
+                action=dict(module='command', args=dict(cmd=f'which {tool_name.lower()}')),
+                register='tool_check',
+                failed_when="tool_check.rc != 0",
+                ignore_errors=True
+            )
         ]
     )
 
@@ -48,8 +53,8 @@ def check_tool_remote(nickname, tool_name):
             loader=loader,
             passwords=dict(),
         )
-        results = tqm.run(play)
-        if results:
+        result_code = tqm.run(play)
+        if result_code == 0:
             result = True
     finally:
         if tqm is not None:
