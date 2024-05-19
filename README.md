@@ -11,16 +11,20 @@ Linux Watch Tower is a command-line tool designed to facilitate the installation
 - **Interactive Installation**: Provide an interactive interface for users to select a host and tool to install.
 - **Ansible Playbook Execution**: Use Ansible to manage installations dynamically based on user input.
 
-## Setting Up a Virtual Environment
+## Installation
 
-It's recommended to use a virtual environment to manage dependencies. Follow these steps to set up a virtual environment and install the required packages:
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/DoTech-fi/LinuxWatchTower
+   cd LinuxWatchTower
+   ```
 
-1. **Create a virtual environment:**
+2. **Create a virtual environment:**
    ```bash
    python3 -m venv venv
    ```
 
-2. **Activate the virtual environment:**
+3. **Activate the virtual environment:**
    - On macOS and Linux:
      ```bash
      source venv/bin/activate
@@ -30,20 +34,7 @@ It's recommended to use a virtual environment to manage dependencies. Follow the
      .\venv\Scripts\activate
      ```
 
-3. **Install required Python packages:**
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-## Installation
-
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/DoTech-fi/LinuxWatchTower
-   cd LinuxWatchTower
-   ```
-
-2. **Install required Python packages:**
+4. **Install required Python packages:**
    ```bash
    pip install -r requirements.txt
    ```
