@@ -2,6 +2,19 @@
 
 
 
+## v0.4.1 (2024-05-19)
+
+### Fix
+
+* fix(check_tool): disable console verbosity and fix bug for checking service existance part on target machine ([`86046d3`](https://github.com/DoTech-fi/LinuxWatchTower/commit/86046d335a5f4e0534f50021717bd12f3c434ad2))
+
+### Refactor
+
+* refactor(tools): some modification on checking service existance ([`cbf89a7`](https://github.com/DoTech-fi/LinuxWatchTower/commit/cbf89a75e7343d990e4bee83d2fdd2644de0f131))
+
+* refactor(README.md): some modification ([`919c7ca`](https://github.com/DoTech-fi/LinuxWatchTower/commit/919c7cabaefc650b2be904e4da55d834dec129fe))
+
+
 ## v0.4.0 (2024-05-19)
 
 ### Feature
