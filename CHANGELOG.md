@@ -2,6 +2,13 @@
 
 
 
+## v0.3.0 (2024-05-19)
+
+### Feature
+
+* feat(ssh): add port option to ssh/config and refactor some texts ([`2d54e45`](https://github.com/DoTech-fi/LinuxWatchTower/commit/2d54e454433243911d9f4c6db9b347a64da84ce1))
+
+
 ## v0.2.0 (2024-05-19)
 
 ### Feature
