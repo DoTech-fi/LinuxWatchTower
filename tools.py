@@ -1,7 +1,8 @@
 from ansible_utils.ansible_executor import install_tool
+from ansible_utils.check_tool import check_tool_remote
 from ansible_utils.inventory import get_host_nicknames
 from ansible_utils.roles import Tools
-from db.database import log_installation, check_installation
+from db.database import log_installation, check_installation, update_installation
 
 def interactive_install():
     host_nicknames = get_host_nicknames()
@@ -24,9 +25,20 @@ def interactive_install():
     print("Available tools:")
     tool_list = list(Tools)
     for index, tool in enumerate(tool_list, start=1):
-        installed = check_installation(nickname, tool.name)
-        status = "(present)" if installed else "(absent)"
-        print(f"{index}. {tool.name} {status}")
+        installed_db = check_installation(nickname, tool.name)
+        installed_remote = check_tool_remote(nickname, tool.name)
+        
+        status_db = "(present in DB)" if installed_db else "(absent in DB)"
+        status_remote = "(present on remote)" if installed_remote else "(absent on remote)"
+        print(f"{index}. {tool.name} {status_db} / {status_remote}")
+        
+        if installed_db != installed_remote:
+            update_choice = input(f"Status mismatch for {tool.name} on {nickname}. Update database status to {status_remote}? (yes/no): ")
+            if update_choice.lower() in ['yes', 'y']:
+                if installed_remote:
+                    log_installation(nickname, tool.name, 'latest')
+                else:
+                    update_installation(nickname, tool.name, remove=True)
 
     tool_index = int(input("Select the tool by number: ")) - 1
     if tool_index < 0 or tool_index >= len(tool_list):
@@ -47,4 +59,3 @@ def interactive_install():
     result = install_tool(nickname, tool.value['default'], version)
     if result == 0:
         log_installation(nickname, tool_name, version)
-
