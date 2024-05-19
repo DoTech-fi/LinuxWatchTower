@@ -38,3 +38,13 @@ def check_installation(host, tool):
     result = cursor.fetchone()
     conn.close()
     return result is not None
+
+def update_installation(host, tool, remove=False):
+    conn = sqlite3.connect('installation_state.db')
+    cursor = conn.cursor()
+    if remove:
+        cursor.execute('''
+            DELETE FROM installations WHERE host = ? AND tool = ?
+        ''', (host, tool))
+    conn.commit()
+    conn.close()
