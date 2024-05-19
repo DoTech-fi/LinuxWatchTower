@@ -2,6 +2,15 @@
 
 
 
+## v0.4.0 (2024-05-19)
+
+### Feature
+
+* feat(db): add update_installation function ([`f2a7667`](https://github.com/DoTech-fi/LinuxWatchTower/commit/f2a7667b06d6f074d41a7db41a8e41760e576b30))
+
+* feat(check_tools): add check_tools module which currently contains a function to check if our package is available on remote host ([`4a6e9ac`](https://github.com/DoTech-fi/LinuxWatchTower/commit/4a6e9ac6d656fd56ecce05f94b284b53269d26a4))
+
+
 ## v0.3.0 (2024-05-19)
 
 ### Feature
