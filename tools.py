@@ -25,20 +25,16 @@ def interactive_install():
     print("Available tools:")
     tool_list = list(Tools)
     for index, tool in enumerate(tool_list, start=1):
-        installed_db = check_installation(nickname, tool.name)
-        installed_remote = check_tool_remote(nickname, tool.name)
-        
-        status_db = "(present in DB)" if installed_db else "(absent in DB)"
-        status_remote = "(present on remote)" if installed_remote else "(absent on remote)"
-        print(f"{index}. {tool.name} {status_db} / {status_remote}")
-        
-        if installed_db != installed_remote:
-            update_choice = input(f"Status mismatch for {tool.name} on {nickname}. Update database status to {status_remote}? (yes/no): ")
-            if update_choice.lower() in ['yes', 'y']:
-                if installed_remote:
-                    log_installation(nickname, tool.name, 'latest')
-                else:
-                    update_installation(nickname, tool.name, remove=True)
+        installed_in_db = check_installation(nickname, tool.name)
+        if not installed_in_db:
+            installed_on_remote = check_tool_remote(nickname, tool.name)
+            if installed_on_remote:
+                update_db = input(f"{tool.name} is installed on the remote host but not in the DB. Do you want to update the DB? (yes/no): ").strip().lower()
+                if update_db == 'yes':
+                    log_installation(nickname, tool.name, 'unknown') 
+                    installed_in_db = True
+        status = "(present)" if installed_in_db else "(absent)"
+        print(f"{index}. {tool.name} {status}")
 
     tool_index = int(input("Select the tool by number: ")) - 1
     if tool_index < 0 or tool_index >= len(tool_list):
