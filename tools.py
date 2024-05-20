@@ -28,7 +28,7 @@ def interactive_install():
         console.print("No hosts found in the SSH config file.", style="bold red")
         return
 
-    table = Table(title="Available Hosts")
+    table = Table(title="\nAvailable Hosts")
     table.add_column("Number", justify="right", style="cyan", no_wrap=True)
     table.add_column("Host Nickname", style="magenta")
 
@@ -45,7 +45,7 @@ def interactive_install():
     nickname = host_nicknames[host_index]
     console.print(f"Selected host: {nickname}", style="bold green")
 
-    tool_table = Table(title="Available Tools")
+    tool_table = Table(title="\nAvailable Tools")
     tool_table.add_column("Number", justify="right", style="cyan", no_wrap=True)
     tool_table.add_column("Tool", style="magenta")
     tool_table.add_column("Status", style="yellow")
@@ -67,7 +67,7 @@ def interactive_install():
     tool_name = tool.name
     console.print(f"Selected tool: {tool_name}", style="bold green")
 
-    console.print(f"Available versions for {tool_name}: {', '.join(tool.value['versions'])}")
+    console.print(f"\nAvailable versions for {tool_name}: {', '.join(tool.value['versions'])}")
     version = input("Enter the version to install (default is 'latest'): ") or 'latest'
 
     if version not in tool.value['versions']:
@@ -98,7 +98,7 @@ def check_state():
         console.print("No hosts found in the SSH config file.", style="bold red")
         return
 
-    table = Table(title="Available Hosts")
+    table = Table(title="\nAvailable Hosts")
     table.add_column("Number", justify="right", style="cyan", no_wrap=True)
     table.add_column("Host Nickname", style="magenta")
 
@@ -119,7 +119,7 @@ def check_state():
 
     for nickname in selected_hosts:
         console.print(f"\n[bold]Checking state for host:[/bold] {nickname}")
-        state_table = Table(title=f"Tool States for {nickname}")
+        state_table = Table(title=f"\nTool States for {nickname}")
         state_table.add_column("Tool", style="cyan")
         state_table.add_column("State", style="magenta")
 
