@@ -2,6 +2,13 @@
 
 
 
+## v0.5.0 (2024-05-20)
+
+### Feature
+
+* feat(get_host_nicknames): add config_path paramater to get_host_nicknames function which allow us to define which path we want to be checked during installation ([`9be9ed1`](https://github.com/DoTech-fi/LinuxWatchTower/commit/9be9ed1a08a8c56e44cf0b806bf8bd67b8899af5))
+
+
 ## v0.4.1 (2024-05-19)
 
 ### Fix
