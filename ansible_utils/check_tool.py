@@ -3,9 +3,21 @@ from ansible.inventory.manager import InventoryManager
 from ansible.vars.manager import VariableManager
 from ansible.playbook.play import Play
 from ansible.executor.task_queue_manager import TaskQueueManager
-from ansible import context
 from ansible.module_utils.common.collections import ImmutableDict
 from ansible.utils.display import Display
+from ansible import context
+from ansible.plugins.callback import CallbackBase
+
+class ResultCallback(CallbackBase):
+    def __init__(self):
+        super().__init__()
+        self.results = {}
+
+    def v2_runner_on_ok(self, result):
+        self.results[result._host.get_name()] = result._result
+
+    def v2_runner_on_failed(self, result, ignore_errors=False):
+        self.results[result._host.get_name()] = result._result
 
 def check_tool_remote(nickname, tool_name):
     loader = DataLoader()
@@ -43,20 +55,24 @@ def check_tool_remote(nickname, tool_name):
     )
 
     play = Play().load(play_source, variable_manager=variable_manager, loader=loader)
+    callback = ResultCallback()
 
     tqm = None
-    result = False
     try:
         tqm = TaskQueueManager(
             inventory=inventory,
             variable_manager=variable_manager,
             loader=loader,
             passwords=dict(),
+            stdout_callback=callback,
         )
-        result_code = tqm.run(play)
-        if result_code == 0:
-            result = True
+        tqm.run(play)
     finally:
         if tqm is not None:
             tqm.cleanup()
-    return result
+
+    host_result = callback.results.get(nickname)
+    if host_result:
+        return host_result.get('rc') == 0
+
+    return False
