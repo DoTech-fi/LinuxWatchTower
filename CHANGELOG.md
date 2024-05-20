@@ -2,6 +2,13 @@
 
 
 
+## v0.6.0 (2024-05-20)
+
+### Feature
+
+* feat(tools): add install_ansible_role function to check if our ansble galaxt roles are installed or not and refactor code ([`2f5affe`](https://github.com/DoTech-fi/LinuxWatchTower/commit/2f5affe254518b9732eacb68e604e9aa8b70b413))
+
+
 ## v0.5.0 (2024-05-20)
 
 ### Feature
