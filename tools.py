@@ -5,8 +5,16 @@ from ansible_utils.inventory import get_host_nicknames
 from ansible_utils.roles import Tools
 from db.database import log_installation, check_installation, update_installation
 
-def interactive_install():
+def install_ansible_role(role_name, version='latest'):
+    import subprocess
+    if version == 'latest':
+        cmd = f"ansible-galaxy role install {role_name}"
+    else:
+        cmd = f"ansible-galaxy role install {role_name},{version}"
+    result = subprocess.run(cmd, shell=True, check=True)
+    return result.returncode == 0
 
+def interactive_install():
     default_config_path = os.path.expanduser("~/.ssh/config")
     config_path = input(f"Enter the path to your config file (default is {default_config_path}): ") or default_config_path
 
@@ -36,7 +44,7 @@ def interactive_install():
             if installed_on_remote:
                 update_db = input(f"{tool.name} is installed on the remote host but not in the DB. Do you want to update the DB? (yes/no): ").strip().lower()
                 if update_db == 'yes':
-                    log_installation(nickname, tool.name, 'unknown') 
+                    log_installation(nickname, tool.name, 'unknown')
                     installed_in_db = True
         status = "(present)" if installed_in_db else "(absent)"
         print(f"{index}. {tool.name} {status}")
@@ -57,6 +65,17 @@ def interactive_install():
         print("Invalid version.")
         return
 
+    if not check_installation(nickname, tool_name) and not check_tool_remote(nickname, tool_name):
+        print(f"Installing {tool_name} version {version}...")
+        if install_ansible_role(tool.value['default'], version):
+            log_installation(nickname, tool_name, version)
+            print(f"Successfully installed {tool_name} version {version}.")
+        else:
+            print(f"Failed to install {tool_name} version {version}.")
+    else:
+        print(f"{tool_name} is already installed.")
+
     result = install_tool(nickname, tool.value['default'], version)
     if result == 0:
         log_installation(nickname, tool_name, version)
+        
