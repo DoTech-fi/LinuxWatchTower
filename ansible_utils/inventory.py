@@ -1,8 +1,8 @@
 import os
 
-def get_host_nicknames():
+def get_host_nicknames(config_path):
     host_nicknames = []
-    with open(os.path.expanduser("~/.ssh/config")) as f:
+    with open(config_path) as f:
         for line in f:
             if line.strip() and not line.strip().startswith('#'):
                 words = line.split()

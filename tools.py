@@ -1,3 +1,4 @@
+import os
 from ansible_utils.ansible_executor import install_tool
 from ansible_utils.check_tool import check_tool_remote
 from ansible_utils.inventory import get_host_nicknames
@@ -5,7 +6,11 @@ from ansible_utils.roles import Tools
 from db.database import log_installation, check_installation, update_installation
 
 def interactive_install():
-    host_nicknames = get_host_nicknames()
+
+    default_config_path = os.path.expanduser("~/.ssh/config")
+    config_path = input(f"Enter the path to your config file (default is {default_config_path}): ") or default_config_path
+
+    host_nicknames = get_host_nicknames(config_path=config_path)
     if not host_nicknames:
         print("No hosts found in the SSH config file.")
         return
