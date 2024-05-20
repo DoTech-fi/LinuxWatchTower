@@ -2,7 +2,7 @@ import argparse
 import os
 from db.database import init_db
 from ssh.config import set_target
-from tools import interactive_install
+from tools import interactive_install, check_state
 
 def display_readme():
     readme_path = os.path.join(os.path.dirname(__file__), 'README.md')
@@ -20,6 +20,7 @@ def main():
 
     subparsers.add_parser('set-target', help='Set a new target')
     subparsers.add_parser('install', help='Install a tool on a target')
+    subparsers.add_parser('check-state', help='Check the state of tools on targets')  # Add new command
 
     args = parser.parse_args()
 
@@ -31,6 +32,8 @@ def main():
         set_target()
     elif args.command == 'install':
         interactive_install()
+    elif args.command == 'check-state':
+        check_state()
 
 if __name__ == "__main__":
     main()
