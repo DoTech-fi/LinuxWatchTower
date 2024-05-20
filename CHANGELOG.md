@@ -2,6 +2,13 @@
 
 
 
+## v0.8.0 (2024-05-20)
+
+### Feature
+
+* feat(rich): add rich library functionality to have more stunning console ([`0a122c8`](https://github.com/DoTech-fi/LinuxWatchTower/commit/0a122c88d82bf627f16017e12e381ae38586560c))
+
+
 ## v0.7.0 (2024-05-20)
 
 ### Chore
