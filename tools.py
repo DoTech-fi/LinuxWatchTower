@@ -1,9 +1,13 @@
 import os
+from rich.console import Console
+from rich.table import Table
 from ansible_utils.ansible_executor import install_tool
 from ansible_utils.check_tool import check_tool_remote
 from ansible_utils.inventory import get_host_nicknames
 from ansible_utils.roles import Tools
 from db.database import log_installation, check_installation, update_installation
+
+console = Console()
 
 def install_ansible_role(role_name, version='latest'):
     import subprocess
@@ -14,59 +18,71 @@ def install_ansible_role(role_name, version='latest'):
     result = subprocess.run(cmd, shell=True, check=True)
     return result.returncode == 0
 
+
 def interactive_install():
     default_config_path = os.path.expanduser("~/.ssh/config")
     config_path = input(f"Enter the path to your config file (default is {default_config_path}): ") or default_config_path
 
     host_nicknames = get_host_nicknames(config_path=config_path)
     if not host_nicknames:
-        print("No hosts found in the SSH config file.")
+        console.print("No hosts found in the SSH config file.", style="bold red")
         return
 
-    print("Available hosts:")
+    table = Table(title="Available Hosts")
+    table.add_column("Number", justify="right", style="cyan", no_wrap=True)
+    table.add_column("Host Nickname", style="magenta")
+
     for index, nickname in enumerate(host_nicknames, start=1):
-        print(f"{index}. {nickname}")
+        table.add_row(str(index), nickname)
+
+    console.print(table)
 
     host_index = int(input("Select the host by number: ")) - 1
     if host_index < 0 or host_index >= len(host_nicknames):
-        print("Invalid selection.")
+        console.print("Invalid selection.", style="bold red")
         return
 
     nickname = host_nicknames[host_index]
-    print(f"Selected host: {nickname}")
+    console.print(f"Selected host: {nickname}", style="bold green")
 
-    print("Available tools:")
+    tool_table = Table(title="Available Tools")
+    tool_table.add_column("Number", justify="right", style="cyan", no_wrap=True)
+    tool_table.add_column("Tool", style="magenta")
+    tool_table.add_column("Status", style="yellow")
+
     tool_list = list(Tools)
     for index, tool in enumerate(tool_list, start=1):
         installed_in_db = check_installation(nickname, tool.name)
         status = "(present)" if installed_in_db else "(absent)"
-        print(f"{index}. {tool.name} {status}")
+        tool_table.add_row(str(index), tool.name, status)
+
+    console.print(tool_table)
 
     tool_index = int(input("Select the tool by number: ")) - 1
     if tool_index < 0 or tool_index >= len(tool_list):
-        print("Invalid selection.")
+        console.print("Invalid selection.", style="bold red")
         return
 
     tool = tool_list[tool_index]
     tool_name = tool.name
-    print(f"Selected tool: {tool_name}")
+    console.print(f"Selected tool: {tool_name}", style="bold green")
 
-    print(f"Available versions for {tool_name}: {', '.join(tool.value['versions'])}")
+    console.print(f"Available versions for {tool_name}: {', '.join(tool.value['versions'])}")
     version = input("Enter the version to install (default is 'latest'): ") or 'latest'
-    
+
     if version not in tool.value['versions']:
-        print("Invalid version.")
+        console.print("Invalid version.", style="bold red")
         return
 
     if not check_tool_remote(nickname, tool_name):
-        print(f"Installing {tool_name} version {version}...")
+        console.print(f"Installing {tool_name} version {version}...", style="bold blue")
         if install_ansible_role(tool.value['default'], version):
             log_installation(nickname, tool_name, version)
-            print(f"Successfully installed {tool_name} version {version}.")
+            console.print(f"Successfully installed {tool_name} version {version}.", style="bold green")
         else:
-            print(f"Failed to install {tool_name} version {version}.")
+            console.print(f"Failed to install {tool_name} version {version}.", style="bold red")
     else:
-        print(f"{tool_name} is already installed on the remote host but not in the DB. Updating the DB.")
+        console.print(f"{tool_name} is already installed on the remote host but not in the DB. Updating the DB.", style="bold yellow")
         log_installation(nickname, tool_name, 'unknown')
 
     result = install_tool(nickname, tool.value['default'], version)
@@ -79,12 +95,17 @@ def check_state():
 
     host_nicknames = get_host_nicknames(config_path=config_path)
     if not host_nicknames:
-        print("No hosts found in the SSH config file.")
+        console.print("No hosts found in the SSH config file.", style="bold red")
         return
 
-    print("Available hosts:")
+    table = Table(title="Available Hosts")
+    table.add_column("Number", justify="right", style="cyan", no_wrap=True)
+    table.add_column("Host Nickname", style="magenta")
+
     for index, nickname in enumerate(host_nicknames, start=1):
-        print(f"{index}. {nickname}")
+        table.add_row(str(index), nickname)
+
+    console.print(table)
 
     host_index = int(input("Select the host by number (or 0 to check all hosts): ")) - 1
 
@@ -93,11 +114,15 @@ def check_state():
     elif 0 <= host_index < len(host_nicknames):
         selected_hosts = [host_nicknames[host_index]]
     else:
-        print("Invalid selection.")
+        console.print("Invalid selection.", style="bold red")
         return
 
     for nickname in selected_hosts:
-        print(f"\nChecking state for host: {nickname}")
+        console.print(f"\n[bold]Checking state for host:[/bold] {nickname}")
+        state_table = Table(title=f"Tool States for {nickname}")
+        state_table.add_column("Tool", style="cyan")
+        state_table.add_column("State", style="magenta")
+
         for tool in Tools:
             tool_name = tool.name
             installed_in_db = check_installation(nickname, tool_name)
@@ -112,7 +137,9 @@ def check_state():
             else:
                 state = "absent"
 
-            print(f"{tool_name}: {state}")
+            state_table.add_row(tool_name, state)
+
+        console.print(state_table)
 
         update_db = input(f"Do you want to update the local DB to match the remote state for host {nickname}? (yes/no): ").strip().lower()
         if update_db == 'yes':
@@ -121,7 +148,7 @@ def check_state():
                 installed_on_remote = check_tool_remote(nickname, tool_name)
                 if installed_on_remote:
                     log_installation(nickname, tool_name, 'unknown')
-                    print(f"Updated DB: {tool_name} is now marked as installed for host {nickname} in the DB.")
+                    console.print(f"[green]Updated DB:[/green] {tool_name} is now marked as installed for host {nickname} in the DB.")
                 else:
                     update_installation(nickname, tool_name, remove=True)
-                    print(f"DB not updated for {tool_name} as it is not installed on the remote host {nickname}.")
+                    console.print(f"[yellow]DB not updated for {tool_name} as it is not installed on the remote host {nickname}.[/yellow]")

@@ -20,7 +20,7 @@ def main():
 
     subparsers.add_parser('set-target', help='Set a new target')
     subparsers.add_parser('install', help='Install a tool on a target')
-    subparsers.add_parser('check-state', help='Check the state of tools on targets')  # Add new command
+    subparsers.add_parser('check-state', help='Check the state of tools on a target')
 
     args = parser.parse_args()
 
