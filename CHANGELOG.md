@@ -2,6 +2,21 @@
 
 
 
+## v0.7.0 (2024-05-20)
+
+### Chore
+
+* chore(roles): add some versions ([`fdbb6b6`](https://github.com/DoTech-fi/LinuxWatchTower/commit/fdbb6b6da2343508574adc930e30137b53d0b466))
+
+### Feature
+
+* feat(tools): add check_state function/option ([`a509779`](https://github.com/DoTech-fi/LinuxWatchTower/commit/a509779b68b58cdcb9c98cd7d8f4dfd1ba7ae3a9))
+
+### Fix
+
+* fix(check_tool): fix bug ([`fd3c052`](https://github.com/DoTech-fi/LinuxWatchTower/commit/fd3c05211d480e97d2e89414700c291d487282e6))
+
+
 ## v0.6.0 (2024-05-20)
 
 ### Feature
