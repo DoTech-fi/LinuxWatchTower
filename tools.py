@@ -119,36 +119,70 @@ def check_state():
 
     for nickname in selected_hosts:
         console.print(f"\n[bold]Checking state for host:[/bold] {nickname}")
+        all_synced = True
+        installable_tools = []
         state_table = Table(title=f"\nTool States for {nickname}")
+        state_table.add_column("Number", style="cyan")
         state_table.add_column("Tool", style="cyan")
         state_table.add_column("State", style="magenta")
 
-        for tool in Tools:
+        for index, tool in enumerate(Tools, start=1):
             tool_name = tool.name
             installed_in_db = check_installation(nickname, tool_name)
             installed_on_remote = check_tool_remote(nickname, tool_name)
 
-            if installed_in_db and installed_on_remote:
+            if installed_on_remote:
+                if not installed_in_db:
+                    log_installation(nickname, tool_name, 'unknown')
+                    console.print(f"[green]Updated DB:[/green] {tool_name} is now marked as installed for host {nickname} in the DB.")
                 state = "present in both DB and remote host"
-            elif installed_in_db:
-                state = "present in DB only"
-            elif installed_on_remote:
-                state = "present on remote host only"
             else:
+                if installed_in_db:
+                    update_installation(nickname, tool_name, remove=True)
+                    console.print(f"[yellow]Updated DB:[/yellow] {tool_name} is now marked as absent for host {nickname} in the DB.")
                 state = "absent"
+                all_synced = False
+                installable_tools.append(index)
 
-            state_table.add_row(tool_name, state)
+            state_table.add_row(str(index), tool_name, state)
 
         console.print(state_table)
 
-        update_db = input(f"Do you want to update the local DB to match the remote state for host {nickname}? (yes/no): ").strip().lower()
-        if update_db == 'yes':
-            for tool in Tools:
-                tool_name = tool.name
-                installed_on_remote = check_tool_remote(nickname, tool_name)
-                if installed_on_remote:
-                    log_installation(nickname, tool_name, 'unknown')
-                    console.print(f"[green]Updated DB:[/green] {tool_name} is now marked as installed for host {nickname} in the DB.")
+        if all_synced:
+            console.print(f"[green]Everything is synchronized and installed for host {nickname}![/green]")
+        else:
+            while True:
+                install_option = input(f"Do you want to install missing packages on the remote host {nickname}? Type 'all' to install all or enter package numbers separated by commas (e.g., 1,2,3): ").strip().lower()
+
+                if install_option == 'all':
+                    for tool in Tools:
+                        tool_name = tool.name
+                        installed_on_remote = check_tool_remote(nickname, tool_name)
+                        if not installed_on_remote:
+                            result = install_tool(nickname, tool.value['default'], 'latest')
+                            if result == 0:
+                                log_installation(nickname, tool_name, 'latest')
+                                console.print(f"[green]Successfully installed {tool_name} on the remote host {nickname}.[/green]")
+                            else:
+                                console.print(f"[red]Failed to install {tool_name} on the remote host {nickname}.[/red]")
+                    break
                 else:
-                    update_installation(nickname, tool_name, remove=True)
-                    console.print(f"[yellow]DB not updated for {tool_name} as it is not installed on the remote host {nickname}.[/yellow]")
+                    try:
+                        selected_indices = [int(x) for x in install_option.split(',') if x.isdigit()]
+                        for index in selected_indices:
+                            if 1 <= index <= len(Tools):
+                                tool = list(Tools)[index - 1]
+                                tool_name = tool.name
+                                installed_on_remote = check_tool_remote(nickname, tool_name)
+                                if not installed_on_remote:
+                                    result = install_tool(nickname, tool.value['default'], 'latest')
+                                    if result == 0:
+                                        log_installation(nickname, tool_name, 'latest')
+                                        console.print(f"[green]Successfully installed {tool_name} on the remote host {nickname}.[/green]")
+                                    else:
+                                        console.print(f"[red]Failed to install {tool_name} on the remote host {nickname}.[/red]")
+                            else:
+                                console.print(f"[red]Invalid package number: {index}. Please enter valid numbers.[/red]")
+                        break
+                    except ValueError:
+                        console.print("[red]Invalid input. Please enter numbers separated by commas or 'all'.[/red]")
