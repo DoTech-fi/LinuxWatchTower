@@ -2,6 +2,21 @@
 
 
 
+## v0.9.0 (2024-05-21)
+
+### Chore
+
+* chore(requirments.txt/tools): adding new package and some modification ([`0c6dee8`](https://github.com/DoTech-fi/LinuxWatchTower/commit/0c6dee866a1edf2d8d6e6206be4374a993496ed8))
+
+### Feature
+
+* feat(tools): change the way of checking db/remote state and add functionality to install missing pckages while checking status ([`6787a9b`](https://github.com/DoTech-fi/LinuxWatchTower/commit/6787a9b14b07f5f03b2e9a10aa7360155b6dd214))
+
+### Refactor
+
+* refactor(ssh): refactor code of set_target to force user set a value for mandatory parameters ([`b66a4cb`](https://github.com/DoTech-fi/LinuxWatchTower/commit/b66a4cb54247ffed657bdfde1312ae52a6c61c73))
+
+
 ## v0.8.0 (2024-05-20)
 
 ### Feature
