@@ -2,6 +2,15 @@
 
 
 
+## v1.0.0 (2024-05-28)
+
+### Breaking
+
+* feat(ui): switch form command line to gui
+
+BREAKING CHANGE: switch form command line to gui ([`19e8093`](https://github.com/DoTech-fi/LinuxWatchTower/commit/19e809349f0a4e3465935e5fb98d9317dc58c340))
+
+
 ## v0.9.0 (2024-05-21)
 
 ### Chore
