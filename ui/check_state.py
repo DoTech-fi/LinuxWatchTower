@@ -1,16 +1,15 @@
 import os
 import customtkinter as ctk
 from tkinter import ttk, messagebox
+from rich.console import Console
 from ansible_utils.inventory import get_host_nicknames
 from ansible_utils.roles import Tools
 from ansible_utils.check_tool import check_tool_remote
 from .utils import clear_frame
-from rich.console import Console
 
 console = Console()
-
 def show_check_state(frame):
-    from .buttons import show_return_button, show_main_buttons
+    from .buttons import show_main_buttons, show_return_button
 
     clear_frame(frame)
     
