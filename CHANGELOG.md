@@ -2,6 +2,17 @@
 
 
 
+## v1.0.1 (2024-06-03)
+
+### Fix
+
+* fix(check_tool): fix code to return both installation and version status ([`b494fee`](https://github.com/DoTech-fi/LinuxWatchTower/commit/b494fee97030b2fedec09f08fb67c8af21bde6c9))
+
+### Refactor
+
+* refactor(check_state): a tiny change ([`11d97c4`](https://github.com/DoTech-fi/LinuxWatchTower/commit/11d97c4f37b7d92da85c88ce06e7fc507b00b931))
+
+
 ## v1.0.0 (2024-05-28)
 
 ### Breaking
