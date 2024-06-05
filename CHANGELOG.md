@@ -2,6 +2,13 @@
 
 
 
+## v1.1.0 (2024-06-05)
+
+### Feature
+
+* feat(host_groups): change the view of interactive_install_wizard and execution logic of ansible_executor to select different hosts to install an app on it ([`67edab3`](https://github.com/DoTech-fi/LinuxWatchTower/commit/67edab347191ec802976bbf7437cf29d7c4f4d73))
+
+
 ## v1.0.1 (2024-06-03)
 
 ### Fix
